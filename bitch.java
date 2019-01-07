@@ -60,7 +60,7 @@ public class bitch {
                 case '[': current <<= grabInteger(new String(program).substring(1).toCharArray()); opCounter += ((Integer) current).toString().length(); program = new String(program).substring(((Integer) current).toString().length()).toCharArray(); break;
                 case ']': current >>>= grabInteger(new String(program).substring(1).toCharArray()); opCounter += ((Integer) current).toString().length(); program = new String(program).substring(((Integer) current).toString().length()).toCharArray(); break;
                 case '.': break loop;
-                case '/': System.out.println(useChars ? new Character((char) current).toString() : new Integer(current).toString()); break;
+                case '/': System.out.print(useChars ? new Character((char) current).toString() : new Integer(current).toString()+"\n"); break;
                 case ':': if(current != 0) { program = new String(program).substring(1).toCharArray(); opCounter++; } break;
                 case ';': if(current == 0) { program = new String(program).substring(1).toCharArray(); opCounter++; } break;
             }
