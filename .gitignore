@@ -1,4 +1,5 @@
 .classpath
 .project
 bin
-code.bitch
+code
+.vscode
