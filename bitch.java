@@ -37,8 +37,8 @@ public class bitch {
     }
 
     public static boolean useChars = false;
+    public static Scanner s = new Scanner(System.in);
     public static int runProgram(char[] originalProgram) {
-        Scanner s = new Scanner(System.in);
         if(useChars) { s.useDelimiter(""); }
 
         int opCounter = 0;
@@ -50,7 +50,7 @@ public class bitch {
         loop:
         while(program.length > 0) {
             switch(program[0]) {
-                case '\\': current = useChars ? (int) s.next().toCharArray()[0] : s.nextInt(); break;
+                case '\\': current = grabInput(); break;
                 case '#': current = grabInteger(new String(program).substring(1).toCharArray()); opCounter += ((Integer) current).toString().length(); program = new String(program).substring(((Integer) current).toString().length()).toCharArray(); break;
                 case '>': blockPoints.add(opCounter); break;
                 case '<': opCounter = blockPoints.get(blockPoints.size()-1)-1; program = join(new char[] { 'a' }, new String(originalProgram).substring(opCounter+1).toCharArray()); blockPoints.remove(blockPoints.size()-1); break;
@@ -77,7 +77,13 @@ public class bitch {
         return current;
     }
 
+    public static int grabInput() {
+        return useChars ? (int) s.next().toCharArray()[0] : s.nextInt();
+    }
+
     public static int grabInteger(char[] c) {
+        if(c[0] == '\\') { return grabInput(); }
+
         String intS = "";
         
         for(char chr : c) {
