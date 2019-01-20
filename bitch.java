@@ -33,7 +33,7 @@ public class bitch {
             program = prgString.toCharArray();
         }
 
-        runProgram(program);        
+        runProgram(program);
     }
 
     public static boolean useChars = false;
@@ -50,16 +50,16 @@ public class bitch {
         loop:
         while(program.length > 0) {
             switch(program[0]) {
-                case '\\': current = grabInput(); break;
-                case '#': current = grabInteger(new String(program).substring(1).toCharArray()); opCounter += ((Integer) current).toString().length(); program = new String(program).substring(((Integer) current).toString().length()).toCharArray(); break;
+                case '\\': storage = ""; current = grabInput(); break;
+                case '#': storage = ""; current = grabInteger(new String(program).substring(1).toCharArray()); opCounter += ((Integer) current).toString().length(); program = new String(program).substring(((Integer) current).toString().length()).toCharArray(); break;
                 case '>': blockPoints.add(opCounter); break;
                 case '<': opCounter = blockPoints.get(blockPoints.size()-1)-1; program = join(new char[] { 'a' }, new String(originalProgram).substring(opCounter+1).toCharArray()); blockPoints.remove(blockPoints.size()-1); break;
                 case '&': current &= grabInteger(new String(program).substring(1).toCharArray()); opCounter += ((Integer) current).toString().length(); program = new String(program).substring(((Integer) current).toString().length()).toCharArray(); break;
                 case '|': current |= grabInteger(new String(program).substring(1).toCharArray()); opCounter += ((Integer) current).toString().length(); program = new String(program).substring(((Integer) current).toString().length()).toCharArray(); break;
                 case '~': current = ~current; break;
                 case '^': current ^= grabInteger(new String(program).substring(1).toCharArray()); opCounter += ((Integer) current).toString().length(); program = new String(program).substring(((Integer) current).toString().length()).toCharArray(); break;
-                case '[': current <<= grabInteger(new String(program).substring(1).toCharArray()); opCounter += ((Integer) current).toString().length(); program = new String(program).substring(((Integer) current).toString().length()).toCharArray(); break;
-                case ']': current >>>= grabInteger(new String(program).substring(1).toCharArray()); opCounter += ((Integer) current).toString().length(); program = new String(program).substring(((Integer) current).toString().length()).toCharArray(); break;
+                case '[': current = lshift(current, grabInteger(new String(program).substring(1).toCharArray())); opCounter += ((Integer) current).toString().length(); program = new String(program).substring(((Integer) current).toString().length()).toCharArray(); break;
+                case ']': current = rshift(current, grabInteger(new String(program).substring(1).toCharArray())); opCounter += ((Integer) current).toString().length(); program = new String(program).substring(((Integer) current).toString().length()).toCharArray(); break;
                 case '.': break loop;
                 case '/': System.out.print(useChars ? new Character((char) current).toString() : new Integer(current).toString()+"\n"); break;
                 case ':': if(current != 0) { program = new String(program).substring(1).toCharArray(); opCounter++; } break;
@@ -102,5 +102,44 @@ public class bitch {
         for(int x = a.length; x < a.length+b.length; x++) { r[x] = b[x-a.length]; }
 
         return r;
+    }
+
+    public static String storage = "";
+    public static int lshift(int n, int x) {
+        int num = 0;
+        {
+            while(storage.length() < x) { storage += "0"; }
+
+            String a = storage.substring(0, x);
+            storage = storage.substring(x);
+
+            String ns = Integer.toBinaryString(n) + a;
+            char[] nc = ns.toCharArray();
+
+            for(int c = 0; c < nc.length; c++) {
+                num += new Integer(new String(new char[] { nc[nc.length-c-1] })) * Math.pow(2, c);
+            }
+        }
+
+        return num;
+    }
+
+    public static int rshift(int n, int x) {
+        int num = 0;
+        {
+            String ns = Integer.toBinaryString(n);
+            while(ns.length() < x) { ns = "0" + ns; }
+
+            storage = ns.substring(0, x) + storage;
+            ns = ns.substring(0, ns.length()-x);
+
+            char[] nc = ns.toCharArray();
+
+            for(int c = 0; c < nc.length; c++) {
+                num += new Integer(new String(new char[] { nc[nc.length-c-1] })) * Math.pow(2, c);
+            }
+        }
+
+        return num;
     }
 }
