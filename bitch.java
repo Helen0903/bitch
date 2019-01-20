@@ -6,14 +6,23 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class bitch {
+    public static boolean debug = false;
     public static boolean useChars = false;
     public static void main(String[] args) {
         char[] program;
 
-        useChars = args[0].equals("-c");
+        int argsc = args[0].substring(0, 1).equals("-") ? 1 : 0;
+        if(argsc == 1) { argsc += args[1].substring(0, 1).equals("-") ? 1 : 0; }
+
+        if(argsc == 2) {
+            debug = (useChars = true);
+        } else if(argsc == 1) {
+            if(args[0].contains("c")) { useChars = true; }
+            if(args[0].contains("d")) { debug = true; }
+        }
 
         {
-            File f = new File(args[useChars ? 1 : 0]);
+            File f = new File(args[0 + argsc]);
             FileReader r;
             try {
                 r = new FileReader(f);
@@ -73,9 +82,12 @@ public class bitch {
             program = new String(program).substring(1).toCharArray();
             opCounter++;
 
-            // if(blockPoints.size() > 0) { System.out.print("Latest block point: "); System.out.println(blockPoints.get(blockPoints.size()-1)); }
-            // System.out.print("Current code: "); System.out.println(program);
-            // System.out.print("Current pointer: "); System.out.println(opCounter);
+            if(debug) {
+                if(blockPoints.size() > 0) { System.out.print("Latest block point: "); System.out.println(blockPoints.get(blockPoints.size()-1)); }
+                System.out.print("Current code: "); System.out.println(program);
+                System.out.print("Current pointer: "); System.out.println(opCounter);
+                System.out.println("Current storage: " + storage);
+            }
         }
 
         return current;
