@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class bitch {
+    public static boolean useChars = false;
     public static void main(String[] args) {
         char[] program;
 
@@ -36,34 +37,37 @@ public class bitch {
         runProgram(program);
     }
 
-    public static boolean useChars = false;
+    public static char[] program;
+    public static int opCounter;
     public static Scanner s = new Scanner(System.in);
     public static int runProgram(char[] originalProgram) {
         if(useChars) { s.useDelimiter(""); }
 
-        int opCounter = 0;
-        char[] program = originalProgram.clone();
+        opCounter = 0;
+        program = originalProgram.clone();
         int current = 0;
         
         ArrayList<Integer> blockPoints = new ArrayList<Integer>();
 
         loop:
         while(program.length > 0) {
+            char[] nextIteration = new String(program).substring(1).toCharArray();
+
             switch(program[0]) {
                 case '\\': storage = ""; current = grabInput(); break;
-                case '#': storage = ""; current = grabInteger(new String(program).substring(1).toCharArray()); opCounter += ((Integer) current).toString().length(); program = new String(program).substring(((Integer) current).toString().length()).toCharArray(); break;
+                case '#': storage = ""; current = next(nextIteration); break;
                 case '>': blockPoints.add(opCounter); break;
                 case '<': opCounter = blockPoints.get(blockPoints.size()-1)-1; program = join(new char[] { 'a' }, new String(originalProgram).substring(opCounter+1).toCharArray()); blockPoints.remove(blockPoints.size()-1); break;
-                case '&': current &= grabInteger(new String(program).substring(1).toCharArray()); opCounter += ((Integer) current).toString().length(); program = new String(program).substring(((Integer) current).toString().length()).toCharArray(); break;
-                case '|': current |= grabInteger(new String(program).substring(1).toCharArray()); opCounter += ((Integer) current).toString().length(); program = new String(program).substring(((Integer) current).toString().length()).toCharArray(); break;
+                case '&': current &= next(nextIteration); break;
+                case '|': current |= next(nextIteration); break;
                 case '~': current = ~current; break;
-                case '^': current ^= grabInteger(new String(program).substring(1).toCharArray()); opCounter += ((Integer) current).toString().length(); program = new String(program).substring(((Integer) current).toString().length()).toCharArray(); break;
-                case '[': current = lshift(current, grabInteger(new String(program).substring(1).toCharArray())); opCounter += ((Integer) current).toString().length(); program = new String(program).substring(((Integer) current).toString().length()).toCharArray(); break;
-                case ']': current = rshift(current, grabInteger(new String(program).substring(1).toCharArray())); opCounter += ((Integer) current).toString().length(); program = new String(program).substring(((Integer) current).toString().length()).toCharArray(); break;
+                case '^': current ^= next(nextIteration); break;
+                case '[': current = lshift(current, next(nextIteration)); break;
+                case ']': current = rshift(current, next(nextIteration)); break;
                 case '.': break loop;
                 case '/': System.out.print(useChars ? new Character((char) current).toString() : new Integer(current).toString()+"\n"); break;
-                case ':': if(current != 0) { program = new String(program).substring(1).toCharArray(); opCounter++; } break;
-                case ';': if(current == 0) { program = new String(program).substring(1).toCharArray(); opCounter++; } break;
+                case ':': if(current != 0) { program = nextIteration; opCounter++; } break;
+                case ';': if(current == 0) { program = nextIteration; opCounter++; } break;
             }
 
             program = new String(program).substring(1).toCharArray();
@@ -94,6 +98,20 @@ public class bitch {
         int intV = new Integer(intS);
 
         return intV;
+    }
+
+    public static int next(char[] c) {
+        int cutAmount = 0;
+        int number;
+
+        number = grabInteger(c);
+        cutAmount = ((Integer) number).toString().length();
+        if(c[0] == '\\') { cutAmount = 1; }
+
+        program = new String(program).substring(cutAmount).toCharArray();
+        opCounter += cutAmount;
+
+        return number;
     }
 
     public static char[] join(char[] a, char[] b) {
