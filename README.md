@@ -7,7 +7,7 @@ And run with:<br>
 `java bitch BITCHFILE` for integer I/O<br>
 `java bitch -c BITCHFILE` for character I/O
 
-A [.jar of bitch v2.0 is available here](https://github.com/Helen0903/bitch/releases/download/v2.0/bitch.jar).<br>
+A [.jar of bitch v3.1 is available here](https://github.com/Helen0903/bitch/releases/download/v3.1/bitch.jar).<br>
 The .jar is runnable in essentially the same way:<br>
 `java -jar bitch.jar BITCHFILE` for integer I/O<br>
 `java -jar bitch.jar -c BITCHFILE` for character I/O
