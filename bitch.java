@@ -160,7 +160,7 @@ public class bitch {
             String ns = Integer.toBinaryString(n);
             while(ns.length() < x) { ns = "0" + ns; }
 
-            storage = ns.substring(0, x) + storage;
+            storage = ns.substring(ns.length()-x, ns.length()) + storage;
             ns = ns.substring(0, ns.length()-x);
 
             char[] nc = ns.toCharArray();
