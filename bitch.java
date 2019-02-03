@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class bitch {
@@ -94,7 +95,10 @@ public class bitch {
     }
 
     public static int grabInput() {
-        return useChars ? (int) s.next().toCharArray()[0] : s.nextInt();
+        int input = -1;
+        try { input = useChars ? (int) s.next().toCharArray()[0] : s.nextInt(); } catch(NoSuchElementException e) {}
+
+        return input;
     }
 
     public static int grabInteger(char[] c) {
