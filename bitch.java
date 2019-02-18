@@ -2,178 +2,212 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class bitch {
-    public static boolean debug = false;
-    public static boolean useChars = false;
     public static void main(String[] args) {
-        char[] program;
-
-        int argsc = args[0].substring(0, 1).equals("-") ? 1 : 0;
-        if(argsc == 1) { argsc += args[1].substring(0, 1).equals("-") ? 1 : 0; }
-
-        if(argsc == 2) {
-            debug = (useChars = true);
-        } else if(argsc == 1) {
-            if(args[0].contains("c")) { useChars = true; }
-            if(args[0].contains("d")) { debug = true; }
+        Program program = new Program("".toCharArray());
+        
+        for(int x = 0; x < args.length-1; x++) {
+            if(args[x].substring(1).equals("-")) {
+                program.useChar = args[x].contains("c");
+                program.debug = args[x].contains("d");
+            }
         }
-
+        
         {
-            File f = new File(args[0 + argsc]);
+            File f = new File(args[args.length-1]);
             FileReader r;
-            try {
-                r = new FileReader(f);
-            } catch(FileNotFoundException e) { System.out.println("Error on finding file"); e.printStackTrace(); return; }
-        
-            int i = -1;
-            String prgString = "";
-            try {
-                while((i = r.read()) != -1) {
-                    prgString += (char) i;
-                }
-            } catch(IOException e) { System.out.println("Error on reading file"); e.printStackTrace(); return; }
+            try { r = new FileReader(f); } catch(FileNotFoundException e) { System.err.print("Codefile not found."); return; }
+
+            String code = "";
+            try { for(int temp = -1; (temp = r.read()) != -1;) { code += (char) temp; } } catch(IOException e) { System.err.print("Invalid codefile."); return; }
+            try { r.close(); } catch(IOException e) { System.err.print("Error whilst closing the file."); return; }
+
+            program.program = code.toCharArray();
+        }
+
+        program.conclude();
+    }
+}
+
+class Program {
+    public char[] program;
+    public int opCounter;
+
+    public long currentValue;
+    public long storage;
+
+    public boolean useChar;
+    public boolean debug;
+    
+    public int startPoint;
+
+    public Program(char[] program) { this(program, 0, 0, 0, 0); }
+    public Program(char[] program, long currentValue, long storage, int opCounter, int startPoint) {
+        this.program = new char[program.length];
+        for(int x = 0; x < this.program.length; x++) { this.program[x] = program[x]; }
+
+        this.currentValue = currentValue;
+        this.storage = storage;
+
+        this.opCounter = opCounter;
+        this.startPoint = startPoint;
+    }
+
+    public static final char[] fsChars = { '\\', '/', '>', '<', '.', ':', ';', '~' };
+    public static final char[] conjChars = { '#', '|', '^', '&', ']', '[' };
+    public static final char[] numberChars = { '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+    public final Scanner scanner = new Scanner(System.in);
+    {
+        if(this.useChar) scanner.useDelimiter("");
+    }
+    public void conclude() { while(this.nextIteration()); }
+    public boolean nextIteration() {
+        if(this.debug) {
+            String accumulator = "";
+            {
+                accumulator = Long.toBinaryString(this.currentValue);
+                for(int x = accumulator.length(); x < 64; x++) { accumulator = "0" + accumulator; }
+
+                char[] accum = accumulator.toCharArray();
+                accumulator = "|Accumulator: ";
+
+                for(int x = 0; x < 64; x++) { accumulator += accum[x] + ((x+1)%8==0?" ":"") + ((x+1)%32==0?"| ":""); }
+                accumulator = accumulator.substring(0, 87);
+            }
+
+            String storage = "";
+            {
+                storage = Long.toBinaryString(this.storage);
+                for(int x = storage.length(); x < 64; x++) { storage = "0" + storage; }
+
+                char[] stor = storage.toCharArray();
+                storage = "|Storage    : ";
+
+                for(int x = 0; x < 64; x++) { storage += stor[x] + ((x+1)%8==0?" ":"") + ((x+1)%32==0?"| ":""); }
+                storage = storage.substring(0, 87);
+            }
             
-            try {
-                r.close();
-            } catch(IOException e) { System.out.println("Error on closing file stream"); e.printStackTrace(); return; }
+            String currentOp = "";
+            {
+                currentOp = "|Loop Marker: ";
+                for(int x = 0; x < this.opCounter; x++) { currentOp += " "; }
+                currentOp += "^";
+            }
 
-            program = prgString.toCharArray();
+            String fullCode = "|Full Code  : " + new String(this.program);
+
+            String loopMarker = "";
+            {
+                loopMarker = "|Loop Marker: ";
+                for(int x = 0; x < this.startPoint; x++) { loopMarker += " "; }
+                loopMarker += "^";
+            }
+
+            String dash = "";
+            {
+                int codeLength = fullCode.length();
+                int optimalLength = codeLength > 88 ? codeLength : 88;
+
+                for(int x = 87; x < optimalLength; x++) { accumulator += " "; } accumulator += "|";
+                for(int x = 87; x < optimalLength; x++) { storage += " "; } storage += "|";
+                for(int x = codeLength; x < optimalLength; x++) { fullCode += " "; } fullCode += "|";
+                for(int x = loopMarker.length(); x < optimalLength; x++) { loopMarker += " "; } loopMarker += "|";
+
+                for(int x = 0; x < optimalLength-1; x++) { dash += "-"; }
+            }
+
+            System.out.println("/" + dash + "\\" + "\n" +
+                               accumulator + "\n" +
+                               storage + "\n" +
+                               currentOp + "\n" +
+                               fullCode + "\n" + 
+                               loopMarker + "\n" + 
+                               "\\" + dash + "/");
         }
 
-        runProgram(program);
-    }
-
-    public static char[] program;
-    public static int opCounter;
-    public static Scanner s = new Scanner(System.in);
-    public static int runProgram(char[] originalProgram) {
-        if(useChars) { s.useDelimiter(""); }
-
-        opCounter = 0;
-        program = originalProgram.clone();
-        int current = 0;
+        char[] op = new char[] { '.' };
         
-        ArrayList<Integer> blockPoints = new ArrayList<Integer>();
-
-        loop:
-        while(program.length > 0) {
-            char[] nextIteration = new String(program).substring(1).toCharArray();
-
-            switch(program[0]) {
-                case '\\': storage = ""; current = grabInput(); break;
-                case '#': storage = ""; current = next(nextIteration); break;
-                case '>': blockPoints.add(opCounter); break;
-                case '<': opCounter = blockPoints.get(blockPoints.size()-1)-1; program = join(new char[] { 'a' }, new String(originalProgram).substring(opCounter+1).toCharArray()); blockPoints.remove(blockPoints.size()-1); break;
-                case '&': current &= next(nextIteration); break;
-                case '|': current |= next(nextIteration); break;
-                case '~': current = ~current; break;
-                case '^': current ^= next(nextIteration); break;
-                case '[': current = lshift(current, next(nextIteration)); break;
-                case ']': current = rshift(current, next(nextIteration)); break;
-                case '.': break loop;
-                case '/': System.out.print(useChars ? new Character((char) current).toString() : new Integer(current).toString()+"\n"); break;
-                case ':': if(current != 0) { program = nextIteration; opCounter++; } break;
-                case ';': if(current == 0) { program = nextIteration; opCounter++; } break;
+        {
+            String nextOp = "";
+            boolean nFlag = false;
+            for(int x = opCounter; x < this.program.length; x++) {
+                if(!nFlag && contains(conjChars, program[x])) { nextOp += program[x]; }
+                else if(!nFlag && contains(fsChars, program[x])) { nextOp += program[x]; break; }
+                else if(contains(numberChars, program[x])) { nFlag = true; nextOp += program[x]; }
+                else { break; }
             }
 
-            program = new String(program).substring(1).toCharArray();
-            opCounter++;
+            op = nextOp.toCharArray();
+        }
+        if(op.length == 0) return false;
 
-            if(debug) {
-                if(blockPoints.size() > 0) { System.out.print("Latest block point: "); System.out.println(blockPoints.get(blockPoints.size()-1)); }
-                System.out.print("Current code: "); System.out.println(program);
-                System.out.print("Current pointer: "); System.out.println(opCounter);
-                System.out.println("Current storage: " + storage);
-            }
+        switch(op[0]) {
+            case '\\': try { this.currentValue = this.useChar ? (long) scanner.next().toCharArray()[0] : scanner.nextLong(); }
+                       catch(NoSuchElementException e) { this.currentValue = -1; } this.storage = 0; break;
+            case '/': if(this.useChar) System.out.println((char) this.currentValue); else System.out.println(this.currentValue); break;
+            case '#': this.currentValue = evaluate(substring(op, 1), this.currentValue, this.storage); this.storage = 0; break;
+            
+            case '>': this.startPoint = this.opCounter; break;
+            case '<': this.opCounter = this.startPoint; return true;
+            case '.': return false;
+
+            case ':': if(this.currentValue == 0) opCounter -= op.length - 1; break;
+            case ';': if(this.currentValue != 0) opCounter -= op.length - 1; break;
+            
+            case '|': this.currentValue |= evaluate(substring(op, 1), this.currentValue, this.storage); break;
+            case '^': this.currentValue ^= evaluate(substring(op, 1), this.currentValue, this.storage); break;
+            case '&': this.currentValue &= evaluate(substring(op, 1), this.currentValue, this.storage); break;
+            case '~': this.currentValue = ~this.currentValue; break;
+            case ']': this.rightShift(evaluate(substring(op, 1), this.currentValue, this.storage)); break;
+            case '[': this.leftShift(evaluate(substring(op, 1), this.currentValue, this.storage)); break;
         }
 
-        return current;
+        this.opCounter += op.length;
+
+        return true;
     }
 
-    public static int grabInput() {
-        int input = -1;
-        try { input = useChars ? (int) s.next().toCharArray()[0] : s.nextInt(); } catch(NoSuchElementException e) {}
+    public static long evaluate(char[] program) { return evaluate(program, 0, 0); }
+    public static long evaluate(char[] program, long startValue, long storage) {
+        if(contains(numberChars, program[0])) return new Long(new String(program));
 
-        return input;
+        Program p = new Program(program, startValue, 0, 0, 0);
+        while(p.nextIteration());
+
+        return p.currentValue;
+    }
+    
+    private void rightShift(long n) {
+        this.storage = (this.storage<<n) | (this.currentValue & ((2<<n)-1));
+        this.currentValue >>>= n;
     }
 
-    public static int grabInteger(char[] c) {
-        if(c[0] == '\\') { return grabInput(); }
+    private void leftShift(long n) {
+        this.currentValue = (this.currentValue<<n) | (this.storage & ((2<<n)-1));
+        this.storage >>>= n;
+    }
 
-        String intS = "";
+    private static boolean contains(char[] charset, char... chars) {
+        boolean contains = true;
         
-        for(char chr : c) {
-            if(!new String(new char[] {chr}).matches("-?[0-9]?")) { break; }
-            intS += chr;
+        outer:
+        for(char c : chars) {
+            for(char d : charset) { if(c == d) continue outer; }
+            contains = false;
         }
-
-        int intV = new Integer(intS);
-
-        return intV;
+        
+        return contains;
     }
 
-    public static int next(char[] c) {
-        int cutAmount = 0;
-        int number;
+    private static char[] substring(char[] array, int start) { return substring(array, start, array.length); }
+    private static char[] substring(char[] array, int start, int end) {
+        char[] output = new char[end-start];
 
-        number = grabInteger(c);
-        cutAmount = ((Integer) number).toString().length();
-        if(c[0] == '\\') { cutAmount = 1; }
+        for(int x = start; x < end; x++) output[x-start] = array[x];
 
-        program = new String(program).substring(cutAmount).toCharArray();
-        opCounter += cutAmount;
-
-        return number;
-    }
-
-    public static char[] join(char[] a, char[] b) {
-        char[] r = new char[a.length + b.length];
-        for(int x = 0; x < a.length; x++) { r[x] = a[x]; }
-        for(int x = a.length; x < a.length+b.length; x++) { r[x] = b[x-a.length]; }
-
-        return r;
-    }
-
-    public static String storage = "";
-    public static int lshift(int n, int x) {
-        int num = 0;
-        {
-            while(storage.length() < x) { storage += "0"; }
-
-            String a = storage.substring(0, x);
-            storage = storage.substring(x);
-
-            String ns = Integer.toBinaryString(n) + a;
-            char[] nc = ns.toCharArray();
-
-            for(int c = 0; c < nc.length; c++) {
-                num += new Integer(new String(new char[] { nc[nc.length-c-1] })) * Math.pow(2, c);
-            }
-        }
-
-        return num;
-    }
-
-    public static int rshift(int n, int x) {
-        int num = 0;
-        {
-            String ns = Integer.toBinaryString(n);
-            while(ns.length() < x) { ns = "0" + ns; }
-
-            storage = ns.substring(ns.length()-x, ns.length()) + storage;
-            ns = ns.substring(0, ns.length()-x);
-
-            char[] nc = ns.toCharArray();
-
-            for(int c = 0; c < nc.length; c++) {
-                num += new Integer(new String(new char[] { nc[nc.length-c-1] })) * Math.pow(2, c);
-            }
-        }
-
-        return num;
+        return output;
     }
 }
