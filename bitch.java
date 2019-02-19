@@ -65,6 +65,7 @@ class Program {
     }
     public void conclude() { while(this.nextIteration()); }
     public boolean nextIteration() {
+        String debug = "";
         if(this.debug) {
             String accumulator = "";
             {
@@ -94,7 +95,7 @@ class Program {
             {
                 currentOp = "|Loop Marker: ";
                 for(int x = 0; x < this.opCounter; x++) { currentOp += " "; }
-                currentOp += "^";
+                currentOp += "V";
             }
 
             String fullCode = "|Full Code  : " + new String(this.program);
@@ -113,19 +114,20 @@ class Program {
 
                 for(int x = 87; x < optimalLength; x++) { accumulator += " "; } accumulator += "|";
                 for(int x = 87; x < optimalLength; x++) { storage += " "; } storage += "|";
+                for(int x = currentOp.length(); x < optimalLength; x++) { currentOp += " "; } currentOp += "|";
                 for(int x = codeLength; x < optimalLength; x++) { fullCode += " "; } fullCode += "|";
                 for(int x = loopMarker.length(); x < optimalLength; x++) { loopMarker += " "; } loopMarker += "|";
 
                 for(int x = 0; x < optimalLength-1; x++) { dash += "-"; }
             }
 
-            System.out.println("/" + dash + "\\" + "\n" +
-                               accumulator + "\n" +
-                               storage + "\n" +
-                               currentOp + "\n" +
-                               fullCode + "\n" + 
-                               loopMarker + "\n" + 
-                               "\\" + dash + "/");
+            debug = "/" + dash + "\\" + "\n" +
+                    accumulator + "\n" +
+                    storage + "\n" +
+                    currentOp + "\n" +
+                    fullCode + "\n" + 
+                    loopMarker + "\n" + 
+                    "\\" + dash + "/";
         }
 
         char[] op = new char[] { '.' };
@@ -143,6 +145,8 @@ class Program {
             op = nextOp.toCharArray();
         }
         if(op.length == 0) return false;
+
+        if(this.debug) System.out.println(debug);
 
         switch(op[0]) {
             case '\\': try { this.currentValue = this.useChar ? (long) scanner.next().toCharArray()[0] : scanner.nextLong(); }
