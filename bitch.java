@@ -178,20 +178,24 @@ class Program {
     public static long evaluate(char[] program, long startValue, long storage) {
         if(contains(numberChars, program[0])) return new Long(new String(program));
 
-        Program p = new Program(program, startValue, 0, 0, 0);
+        Program p = new Program(program, startValue, storage, 0, 0);
         while(p.nextIteration());
 
         return p.currentValue;
     }
     
     private void rightShift(long n) {
-        this.storage = (this.storage<<n) | (this.currentValue & ((2<<n)-1));
-        this.currentValue >>>= n;
+        for(int x = 0; x < n; x++) {
+            this.storage = (this.storage << 1) | (this.currentValue & 1);
+            this.currentValue >>>= 1;
+        }
     }
 
     private void leftShift(long n) {
-        this.currentValue = (this.currentValue<<n) | (this.storage & ((2<<n)-1));
-        this.storage >>>= n;
+        for(int x = 0; x < n; x++) {
+            this.currentValue = (this.currentValue << 1) | (this.storage & 1);
+            this.storage >>>= 1;
+        }
     }
 
     private static boolean contains(char[] charset, char... chars) {
