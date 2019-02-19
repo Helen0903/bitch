@@ -10,7 +10,7 @@ public class bitch {
         Program program = new Program("".toCharArray());
         
         for(int x = 0; x < args.length-1; x++) {
-            if(args[x].substring(1).equals("-")) {
+            if(args[x].substring(0,1).equals("-")) {
                 program.useChar = args[x].contains("c");
                 program.debug = args[x].contains("d");
             }
@@ -147,7 +147,7 @@ class Program {
         switch(op[0]) {
             case '\\': try { this.currentValue = this.useChar ? (long) scanner.next().toCharArray()[0] : scanner.nextLong(); }
                        catch(NoSuchElementException e) { this.currentValue = -1; } this.storage = 0; break;
-            case '/': if(this.useChar) System.out.println((char) this.currentValue); else System.out.println(this.currentValue); break;
+            case '/': if(this.useChar) System.out.print((char) this.currentValue); else System.out.println(this.currentValue); break;
             case '#': this.currentValue = evaluate(substring(op, 1), this.currentValue, this.storage); this.storage = 0; break;
             
             case '>': this.startPoint = this.opCounter; break;
