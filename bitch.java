@@ -91,20 +91,20 @@ class Program {
                 storage = storage.substring(0, 87);
             }
             
-            String currentOp = "";
-            {
-                currentOp = "|Loop Marker: ";
-                for(int x = 0; x < this.opCounter; x++) { currentOp += " "; }
-                currentOp += "V";
-            }
-
-            String fullCode = "|Full Code  : " + new String(this.program);
-
             String loopMarker = "";
             {
                 loopMarker = "|Loop Marker: ";
                 for(int x = 0; x < this.startPoint; x++) { loopMarker += " "; }
-                loopMarker += "^";
+                loopMarker += "V";
+            }
+
+            String fullCode = "|Full Code  : " + new String(this.program);
+
+            String currentOp = "";
+            {
+                currentOp = "|Current    : ";
+                for(int x = 0; x < this.opCounter; x++) { currentOp += " "; }
+                currentOp += "^";
             }
 
             String dash = "";
@@ -114,9 +114,9 @@ class Program {
 
                 for(int x = 87; x < optimalLength; x++) { accumulator += " "; } accumulator += "|";
                 for(int x = 87; x < optimalLength; x++) { storage += " "; } storage += "|";
-                for(int x = currentOp.length(); x < optimalLength; x++) { currentOp += " "; } currentOp += "|";
-                for(int x = codeLength; x < optimalLength; x++) { fullCode += " "; } fullCode += "|";
                 for(int x = loopMarker.length(); x < optimalLength; x++) { loopMarker += " "; } loopMarker += "|";
+                for(int x = codeLength; x < optimalLength; x++) { fullCode += " "; } fullCode += "|";
+                for(int x = currentOp.length(); x < optimalLength; x++) { currentOp += " "; } currentOp += "|";
 
                 for(int x = 0; x < optimalLength-1; x++) { dash += "-"; }
             }
@@ -124,9 +124,9 @@ class Program {
             debug = "/" + dash + "\\" + "\n" +
                     accumulator + "\n" +
                     storage + "\n" +
-                    currentOp + "\n" +
+                    loopMarker + "\n" +
                     fullCode + "\n" + 
-                    loopMarker + "\n" + 
+                    currentOp + "\n" + 
                     "\\" + dash + "/";
         }
 
