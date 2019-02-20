@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class bitch {
     public static void main(String[] args) {
-        Program program = new Program("".toCharArray());
+        Program program = new Program(new char[0]);
         
         for(int x = 0; x < args.length-1; x++) {
             if(args[x].substring(0,1).equals("-")) {
