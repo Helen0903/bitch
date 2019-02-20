@@ -19,11 +19,11 @@ public class bitch {
         {
             File f = new File(args[args.length-1]);
             FileReader r;
-            try { r = new FileReader(f); } catch(FileNotFoundException e) { System.err.print("Codefile not found."); return; }
+            try { r = new FileReader(f); } catch(FileNotFoundException e) { System.err.println("Codefile not found."); return; }
 
             String code = "";
-            try { for(int temp = -1; (temp = r.read()) != -1;) { code += (char) temp; } } catch(IOException e) { System.err.print("Invalid codefile."); return; }
-            try { r.close(); } catch(IOException e) { System.err.print("Error whilst closing the file."); return; }
+            try { for(int temp = -1; (temp = r.read()) != -1;) { code += (char) temp; } } catch(IOException e) { System.err.println("Invalid codefile."); return; }
+            try { r.close(); } catch(IOException e) { System.err.println("Error whilst closing the file."); return; }
 
             program.program = code.toCharArray();
         }
@@ -60,9 +60,6 @@ class Program {
     public static final char[] conjChars = { '#', '|', '^', '&', ']', ':', ';', '[' };
     public static final char[] numberChars = { '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
     public final Scanner scanner = new Scanner(System.in);
-    {
-        if(this.useChar) scanner.useDelimiter("");
-    }
     public void conclude() { while(this.nextIteration()); }
     public boolean nextIteration() {
         String debug = "";
@@ -149,8 +146,8 @@ class Program {
         if(this.debug) System.out.println(debug);
 
         switch(op[0]) {
-            case '\\': try { this.currentValue = this.useChar ? (long) scanner.next().toCharArray()[0] : scanner.nextLong(); }
-                       catch(NoSuchElementException e) { this.currentValue = -1; } this.storage = 0; break;
+            case '\\': try { this.currentValue = this.useChar ? (long) scanner.findInLine(".").toCharArray()[0] : new Long(scanner.findInLine("[^\\s]+")); }
+                       catch(NullPointerException|NumberFormatException e) { this.currentValue = -1; } this.storage = 0; break;
             case '/': if(this.useChar) System.out.print((char) this.currentValue); else System.out.println(this.currentValue); break;
             case '#': this.currentValue = evaluate(substring(op, 1), this.currentValue, this.storage); this.storage = 0; break;
             
