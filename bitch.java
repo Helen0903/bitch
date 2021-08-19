@@ -58,7 +58,7 @@ class Program {
     public static final char[] fsChars = { '\\', '/', '>', '<', '.', '~' };
     public static final char[] conjChars = { '#', '|', '^', '&', ']', ':', ';', '[' };
     public static final char[] numberChars = { '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-    public final Scanner scanner = new Scanner(System.in);
+    public static final Scanner scanner = new Scanner(System.in);
     public void conclude() { while(this.nextIteration()); }
     public boolean nextIteration() {
         String debug = "";
